@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Admin Login</h2>
+
+<input id="e" placeholder="Email"><br>
+<input id="p" placeholder="Password" type="password"><br>
+
+<button onclick="login()">Login</button>
+
+<script>
+function login(){
+if(e.value==="vitalvault.official@gmail.com" && p.value==="saidullahvault.786"){
+localStorage.setItem("admin","true");
+location.href="admin.html";
+}else{
+alert("Wrong");
+}
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Cart</h2>
+<div id="cart"></div>
+
+<button onclick="checkout()">Checkout</button>
+
+<script>
+let cart=JSON.parse(localStorage.getItem("cart"))||[];
+
+function load(){
+let html="";
+if(cart.length===0){
+html="Cart Empty";
+}else{
+cart.forEach((item,i)=>{
+html+=`${item.name} ₹${item.price} 
+<button onclick="del(${i})">❌</button><br>`;
+});
+}
+document.getElementById("cart").innerHTML=html;
+}
+
+function del(i){
+cart.splice(i,1);
+localStorage.setItem("cart",JSON.stringify(cart));
+load();
+}
+
+function checkout(){
+localStorage.setItem("buyNow",JSON.stringify(cart));
+location.href="checkout.html";
+}
+
+load();
+</script>
+
+</body>
+</html>
