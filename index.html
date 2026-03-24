@@ -1,80 +1,67 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rush Cart</title>
-
-<style>
-body{margin:0;font-family:sans-serif;background:#f1f3f6;}
-.header{background:#2874f0;color:#fff;padding:10px;display:flex;gap:10px;}
-.container{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:10px;}
-.card{background:#fff;padding:10px;border-radius:10px;}
-.btn{width:100%;padding:8px;margin-top:5px;border:none;border-radius:5px;}
-.cart{background:#ff9f00;color:#fff;}
-.buy{background:#fb641b;color:#fff;}
-</style>
-</head>
-
 <body>
 
-<div class="header">
-<div>Rush Cart ⚡</div>
-<button onclick="goCart()">🛒</button>
-</div>
+<h2>Rush Cart</h2>
 
-<div id="products" class="container"></div>
+<a href="login.html">Login</a> | 
+<a href="cart.html">Cart 🛒</a>
 
-<script type="module">
+<hr>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<div id="products"></div>
 
-const app = initializeApp({
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+
+firebase.initializeApp({
 apiKey:"AIzaSyApfAZv8aBr9kekqNh6DUwsBY4pfAn7zGg",
 authDomain:"rush-cart.firebaseapp.com",
 projectId:"rush-cart"
 });
 
-const db=getFirestore(app);
+const db = firebase.firestore();
 
-let all=[];
+function load(){
 
-async function load(){
-let snap=await getDocs(collection(db,"products"));
-snap.forEach(d=>all.push(d.data()));
-show(all);
-}
-
-function show(data){
 let html="";
-data.forEach(p=>{
+
+db.collection("products").get().then(snap=>{
+snap.forEach(doc=>{
+let p=doc.data();
+
 html+=`
-<div class="card">
-<img src="${p.img}" width="100%">
-<h4>${p.name}</h4>
-<p>₹${p.price} <strike>₹${p.cut}</strike></p>
+<div style="border:1px solid #ccc;padding:10px;margin:10px;">
+<img src="${p.img}" width="100"><br>
+<b>${p.name}</b><br>
+₹${p.price} <strike>₹${p.cut}</strike><br>
 <p>${p.desc}</p>
 
-<button class="btn cart" onclick="addCart('${p.name}',${p.price})">Add to Cart</button>
-<button class="btn buy" onclick="buy('${p.name}',${p.price})">Buy Now</button>
-</div>`;
+<button onclick="addCart('${p.name}',${p.price})">Add to Cart</button>
+<button onclick="buyNow('${p.name}',${p.price})">Buy Now</button>
+</div>
+`;
 });
-document.getElementById("products").innerHTML=html;
+
+products.innerHTML=html;
+
+});
+
 }
 
-window.addCart=(name,price)=>{
+function addCart(name,price){
 let c=JSON.parse(localStorage.getItem("cart"))||[];
 c.push({name,price});
 localStorage.setItem("cart",JSON.stringify(c));
 alert("Added");
 }
 
-window.buy=(name,price)=>{
+function buyNow(name,price){
 localStorage.setItem("buyNow",JSON.stringify([{name,price}]));
-location.href="checkout.html";
+location="checkout.html";
 }
-
-window.goCart=()=>location.href="cart.html";
 
 load();
 
