@@ -4,105 +4,60 @@
 
 <h2>Admin Panel</h2>
 
-<input id="name" placeholder="Product Name"><br><br>
-<input id="price" placeholder="Price"><br><br>
-<input id="cut" placeholder="Cut Price"><br><br>
-<textarea id="desc" placeholder="Description"></textarea><br><br>
-<input id="img" placeholder="Image URL"><br><br>
+<input id="name" placeholder="Name"><br>
+<input id="price" placeholder="Price"><br>
+<input id="cut" placeholder="Cut Price"><br>
+<input id="desc" placeholder="Description"><br>
+<input id="img" placeholder="Image URL"><br>
 
-<button onclick="addProduct()">Add Product</button>
-
-<p id="msg"></p>
+<button onclick="add()">Add</button>
 
 <hr>
 
-<h3>Products</h3>
 <div id="list"></div>
 
-<!-- 🔥 Firebase CDN (IMPORTANT) -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
 
-// 🔥 FULL CONFIG
 firebase.initializeApp({
-apiKey: "AIzaSyApfAZv8aBr9kekqNh6DUwsBY4pfAn7zGg",
-authDomain: "rush-cart.firebaseapp.com",
-projectId: "rush-cart",
-storageBucket: "rush-cart.firebasestorage.app",
-messagingSenderId: "716637780058",
-appId: "1:716637780058:web:80920d9e12dcf330218063"
+apiKey:"AIzaSyApfAZv8aBr9kekqNh6DUwsBY4pfAn7zGg",
+authDomain:"rush-cart.firebaseapp.com",
+projectId:"rush-cart"
 });
 
 const db = firebase.firestore();
 
-// ✅ ADD PRODUCT
-function addProduct(){
-
-let name = document.getElementById("name").value;
-let price = document.getElementById("price").value;
-let cut = document.getElementById("cut").value;
-let desc = document.getElementById("desc").value;
-let img = document.getElementById("img").value;
-
-if(!name || !price || !img){
-msg.innerText="❌ Fill required fields";
-return;
-}
-
+function add(){
 db.collection("products").add({
-name:name,
-price:Number(price),
-cut:Number(cut || price),
-desc:desc,
-img:img
-})
-.then(()=>{
-msg.innerText="✅ Product Added";
-loadProducts();
-})
-.catch(err=>{
-msg.innerText="❌ Error: "+err;
-console.log(err);
-});
-
+name:name.value,
+price:Number(price.value),
+cut:Number(cut.value),
+desc:desc.value,
+img:img.value
+}).then(()=>load());
 }
 
-// 🔥 LOAD PRODUCTS
-function loadProducts(){
-
+function load(){
 let html="";
-
 db.collection("products").get().then(snap=>{
 snap.forEach(doc=>{
 let p=doc.data();
-
 html+=`
-<div style="border:1px solid #ccc;padding:10px;margin:5px;">
-<img src="${p.img}" width="80"><br>
-<b>${p.name}</b><br>
-₹${p.price} <strike>₹${p.cut}</strike><br>
-<button onclick="deleteProduct('${doc.id}')">Delete</button>
-</div>
+${p.name} ₹${p.price}
+<button onclick="del('${doc.id}')">Delete</button><br>
 `;
 });
-
-document.getElementById("list").innerHTML=html;
-});
-
-}
-
-// ❌ DELETE
-function deleteProduct(id){
-db.collection("products").doc(id).delete().then(()=>{
-alert("Deleted");
-loadProducts();
+list.innerHTML=html;
 });
 }
 
-// INIT
-loadProducts();
+function del(id){
+db.collection("products").doc(id).delete().then(()=>load());
+}
+
+load();
 
 </script>
 
